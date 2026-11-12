@@ -22,6 +22,7 @@ Update later with `/plugin marketplace update toleressea`.
 | `/tol:unity-cli` | Drive the running Unity Editor from the terminal through the Unity CLI. |
 | `/tol:review` | Review a change through configurable lenses, verify each finding, and report. |
 | `/tol:test` | Test a change through configurable stages: static, unit, integration, smoke, e2e. |
+| `/tol:yt-transcript` | Pull a YouTube transcript with yt-dlp, answer a prompt about it, and take follow-up questions. Needs `yt-dlp[default,curl-cffi]` and Node.js. |
 
 ### Commands
 

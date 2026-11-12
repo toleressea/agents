@@ -6,6 +6,7 @@ Events: the session's chat (short status filler goes to <out dir>/filler.log),
 agent dispatches and reports, questions, tool errors, operator messages, and
 phase changes in an /orchestrate state.json.
 """
+
 import json
 import os
 import re
@@ -63,10 +64,12 @@ def handle(e):
             task_note(att["prompt"], ts)
         return
     if e.get("type") == "user" and isinstance(content, str):
-        if "[Subagent hand-back]" in content or content.startswith("Another Claude session"):
+        if "[Subagent hand-back]" in content or content.startswith(
+            "Another Claude session"
+        ):
             end = content.find("</agent-message>")
             start = content.find("The report follows:")
-            body = content[start + 19 if start >= 0 else 0:end if end > 0 else None]
+            body = content[start + 19 if start >= 0 else 0 : end if end > 0 else None]
             emit("AGENT REPORT", body, ts)
         elif content.startswith("<task-notification>"):
             task_note(content, ts)
@@ -75,19 +78,37 @@ def handle(e):
         return
     for b in content if isinstance(content, list) else []:
         t = b.get("type")
-        if e.get("type") == "user" and t == "text" and b["text"].strip() and not b["text"].startswith("<"):
+        if (
+            e.get("type") == "user"
+            and t == "text"
+            and b["text"].strip()
+            and not b["text"].startswith("<")
+        ):
             emit("OPERATOR", b["text"], ts)
         elif e.get("type") == "assistant" and t == "text" and b["text"].strip():
             text = b["text"].strip()
             if FILLER.fullmatch(text) and not ALARM.search(text):
-                with open(os.path.join(out_dir, "filler.log"), "a", encoding="utf-8") as f:
+                with open(
+                    os.path.join(out_dir, "filler.log"), "a", encoding="utf-8"
+                ) as f:
                     f.write(ts + " " + " ".join(b["text"].split()) + "\n")
             else:
                 emit("SAYS", b["text"], ts)
-        elif t == "tool_use" and b.get("name") in ("Agent", "AskUserQuestion", "Workflow"):
+        elif t == "tool_use" and b.get("name") in (
+            "Agent",
+            "AskUserQuestion",
+            "Workflow",
+        ):
             inp = b.get("input", {})
-            emit(b["name"], inp.get("description") or (inp.get("questions") or [{}])[0].get("question", ""), ts)
-        elif t == "tool_result" and (b.get("is_error") or result_text(b).startswith("Exit code")):
+            emit(
+                b["name"],
+                inp.get("description")
+                or (inp.get("questions") or [{}])[0].get("question", ""),
+                ts,
+            )
+        elif t == "tool_result" and (
+            b.get("is_error") or result_text(b).startswith("Exit code")
+        ):
             emit("TOOL ERROR", result_text(b)[:250], ts)
 
 

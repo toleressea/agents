@@ -6,6 +6,7 @@ Prints the convention text, then the merged config as flat `key = value  # sourc
 lines. Always exits 0, because a failing `!` injection aborts the whole skill.
 Problems are printed as `CONFIG ERROR:` lines, and the skill stops on them.
 """
+
 import json
 import sys
 import tomllib
@@ -33,7 +34,9 @@ def merge(base, layer, source, sources, extensible, errors, prefix=""):
         if key not in base and not free:
             errors.append(f"{source}: unknown key `{path}`")
             continue
-        if value == OFF and isinstance(base.get(key), dict):  # "off" is a plain value for scalars
+        if value == OFF and isinstance(
+            base.get(key), dict
+        ):  # "off" is a plain value for scalars
             base.pop(key)
             for k in [k for k in sources if k == path or k.startswith(path + ".")]:
                 del sources[k]
@@ -84,7 +87,9 @@ def resolve(plugin, skill, skill_dir, project_dir, home=None):
             mark(data, "", name, sources)
             sources = {k.lstrip("."): v for k, v in sources.items()}
         else:
-            merge(config, data, name, sources, set(config.get("extensible", [])), errors)
+            merge(
+                config, data, name, sources, set(config.get("extensible", [])), errors
+            )
     if not used or not used[0].startswith("shipped"):
         errors.append(f"shipped config missing: {layers[0][1]}")
     return config, sources, used, errors
@@ -104,9 +109,13 @@ def render(config, sources, used, errors):
 
 def main(argv):
     if len(argv) != 5:
-        print("CONFIG ERROR: usage: layers.py <plugin> <skill> <skill dir> <project dir>")
+        print(
+            "CONFIG ERROR: usage: layers.py <plugin> <skill> <skill dir> <project dir>"
+        )
         return
-    convention = Path(__file__).resolve().parent.parent / "conventions" / "composable.md"
+    convention = (
+        Path(__file__).resolve().parent.parent / "conventions" / "composable.md"
+    )
     if convention.is_file():
         print(convention.read_text(encoding="utf-8"))
     print("```")
@@ -118,5 +127,5 @@ if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     try:
         main(sys.argv)
-    except Exception as e:  # never abort the skill; make the failure visible instead
+    except Exception as e:  # noqa: BLE001  # never abort the skill; make the failure visible instead
         print(f"CONFIG ERROR: layers.py crashed: {e!r}")

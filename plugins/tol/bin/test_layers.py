@@ -27,7 +27,9 @@ class LayersTest(unittest.TestCase):
                     p = base / ".agents" / "config" / "tol" / "review.toml"
                     p.parent.mkdir(parents=True)
                     p.write_text(text)
-            return render(*resolve("tol", "review", d / "skill", d / "repo", home=d / "home"))
+            return render(
+                *resolve("tol", "review", d / "skill", d / "repo", home=d / "home")
+            )
 
     def test_shipped_only(self):
         out = self.run_layers()
@@ -51,7 +53,9 @@ class LayersTest(unittest.TestCase):
         self.assertIn('verify.fix = "off"  # repo', out)
 
     def test_empty_string_unsets_a_binding_field(self):
-        out = self.run_layers(repo='[lenses.correctness]\ninstructions = ""\nskill = "x:y"')
+        out = self.run_layers(
+            repo='[lenses.correctness]\ninstructions = ""\nskill = "x:y"'
+        )
         self.assertNotIn("lenses.correctness.instructions", out)
         self.assertIn('lenses.correctness.skill = "x:y"  # repo', out)
 

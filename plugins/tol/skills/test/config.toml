@@ -1,0 +1,39 @@
+# tol:test shipped defaults. Override in ~/.agents/config/tol/test.toml (user)
+# or <repo>/.agents/config/tol/test.toml (repo). See conventions/composable.md.
+
+# tables under these keys accept new entries (a repo can add perf, evals, contract, ...)
+extensible = ["stages"]
+
+# stages run in this order, cheapest first. A repo that adds a stage lists it here.
+order = ["static", "unit", "integration", "smoke", "e2e"]
+
+# true: stop at the first failing stage. false: run every stage and report all.
+fail_fast = true
+
+# off: report only. ask: offer fixes, apply after approval. apply: fix and rerun.
+fix = "ask"
+
+# with fix = "apply": how many fix-and-rerun cycles before giving up.
+rounds = 2
+
+# top-level keys above, tables below: in TOML a key after a [table] header belongs to it
+
+# every stage. input: the change or bug to test, and the repo.
+# done-when: the stage's checks ran to completion, or none exist.
+# output: pass | fail | none-found, the command or method used, and evidence
+# (failing test names, the error, a log path). none-found is not a failure.
+# a stage binds `skill`, `instructions`, or both (instructions then steer the skill).
+[stages.static]
+instructions = "run the repo's lint and type check, as CI or the project docs define them"
+
+[stages.unit]
+instructions = "find the repo's unit tests (CI config, package.json, Makefile, pyproject, test folders) and run them"
+
+[stages.integration]
+instructions = "find and run tests that cross a process, database, or network boundary"
+
+[stages.smoke]
+instructions = "the fastest proof the product builds, starts, and does its main job once"
+
+[stages.e2e]
+instructions = "find and run end-to-end tests that drive the built product the way a user does"

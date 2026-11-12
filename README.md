@@ -20,6 +20,8 @@ Update later with `/plugin marketplace update toleressea`.
 | `/tol:model-routing` | Weekly evidence-based refresh of which Claude model and effort to use for which work. Writes `~/.agents/model-routing.md`. |
 | `/tol:claude-artifacts` | Work with Claude Docs artifacts from Zed or another ACP host. |
 | `/tol:unity-cli` | Drive the running Unity Editor from the terminal through the Unity CLI. |
+| `/tol:review` | Review a change through configurable lenses, verify each finding, and report. |
+| `/tol:test` | Test a change through configurable stages: static, unit, integration, smoke, e2e. |
 
 ### Commands
 
@@ -28,6 +30,20 @@ Update later with `/plugin marketplace update toleressea`.
 | `/tol:temp-log-add [marker]` | Add temporary debug logs tagged with a marker. |
 | `/tol:temp-log-remove [marker]` | Remove every log with that marker. |
 | `/tol:normalize-audio <in> <out> [dB]` | Peak-normalize audio files with ffmpeg. |
+
+## Configure composable skills
+
+`tol:review` and `tol:test` are composable: each step (a review lens, a test stage) is bound to a skill or to plain instructions in a TOML config. The shipped `config.toml` next to each skill documents every key. Override it per user in `~/.agents/config/tol/<skill>.toml`, per repo in `.agents/config/tol/<skill>.toml`, or per run with `key=value` arguments:
+
+```toml
+# .agents/config/tol/review.toml
+[lenses.simplicity]
+skill = "ponytail:ponytail-review"
+[lenses]
+security = "off"
+```
+
+`/tol:review dry-run` prints the resolved config with the source of each key. A skill calling another tol skill needs the allow rule `Skill(tol:*)` outside auto mode. The convention is in [plugins/tol/conventions/composable.md](plugins/tol/conventions/composable.md).
 
 ## Global instructions
 

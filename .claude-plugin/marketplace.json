@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "toleressea",
+  "description": "Tol Eressea's Claude Code skills and commands.",
+  "owner": {
+    "name": "Tol Eressea",
+    "url": "https://github.com/toleressea"
+  },
+  "plugins": [
+    {
+      "name": "tol",
+      "description": "General skills: HTML reports, session watching, model routing, Claude Docs artifacts, Unity CLI, plus a few dev commands.",
+      "source": "./plugins/tol",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>dry run findings</title>
+<style>
+  :root { --bg:#0b0d10; --panel:#161a21; --line:#232934; --text:#d7dce4; --dim:#8b95a5; --you:#d29922; --accent:#58a6ff; --new:#3fb950; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--text); font:13px/1.5 ui-sans-serif,system-ui,Segoe UI,sans-serif; }
+  .app { max-width:1000px; margin:0 auto; }
+  .top { display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; margin-bottom:12px; }
+  .top b { font-size:15px; } .meta { color:var(--dim); font-size:11.5px; } .count { margin-left:auto; color:var(--dim); }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 16px; margin:10px 0; }
+  .card.new { border-color:var(--new); box-shadow:0 0 0 1px var(--new) inset; }
+  h3 { margin:0 0 6px; font-size:14px; } .n { color:var(--accent); margin-right:6px; }
+  .tag { font-size:10.5px; color:var(--dim); border:1px solid var(--line); border-radius:3px; padding:0 5px; margin-left:6px; font-weight:400; }
+  .fix { border-left:2px solid var(--you); padding-left:8px; margin-top:6px; }
+  .fix b { color:var(--you); font-weight:600; } code { background:#0b0d10; border-radius:3px; padding:0 4px; font-size:11.5px; }
+  .stale { color:#f85149; }
+</style></head><body>
+<div class="app">
+  <div class="top"><b id="title">findings</b><span class="meta" id="meta"></span><span class="count" id="count"></span></div>
+  <div id="list"></div>
+</div>
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+let last = "", seen = null;
+async function poll() {
+  try {
+    const text = await fetch("findings.json", { cache: "no-store" }).then(r => r.text());
+    document.getElementById("meta").classList.remove("stale");
+    if (text === last) return;
+    last = text;
+    const d = JSON.parse(text), fs = d.findings || [];
+    const fresh = seen ? new Set(fs.map(f => f.n).filter(n => !seen.has(n))) : new Set();
+    seen = new Set(fs.map(f => f.n));
+    document.getElementById("title").textContent = d.title;
+    document.getElementById("meta").textContent = [d.session && `session ${d.session}`, d.run && `run ${d.run}`, d.status].filter(Boolean).join(" · ");
+    document.getElementById("count").textContent = `${fs.length} findings`;
+    document.getElementById("list").innerHTML = [...fs].reverse().map(f =>
+      `<div class="card ${fresh.has(f.n) ? "new" : ""}"><h3><span class="n">#${f.n}</span>${md(f.title)}<span class="tag">${esc(f.area)}</span>${f.status ? `<span class="tag" style="color:var(--new)">${esc(f.status)}</span>` : ""}${f.seen ? `<span class="tag">${esc(f.seen)}</span>` : ""}</h3>` +
+      `<div>${md(f.detail)}</div>` + (f.fix ? `<div class="fix"><b>Fix idea:</b> ${md(f.fix)}</div>` : "") + `</div>`).join("");
+  } catch (e) { document.getElementById("meta").classList.add("stale"); }
+}
+poll(); setInterval(poll, 2000);
+</script>
+</body></html>

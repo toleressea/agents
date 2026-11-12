@@ -23,6 +23,7 @@ Update later with `/plugin marketplace update toleressea`.
 | `/tol:review` | Review a change through configurable lenses, verify each finding, and report. |
 | `/tol:test` | Test a change through configurable stages: static, unit, integration, smoke, e2e. |
 | `/tol:yt-transcript` | Pull a YouTube transcript with yt-dlp, answer a prompt about it, and take follow-up questions. Needs `yt-dlp[default,curl-cffi]` and Node.js. |
+| `/tol:usage-loop` | Keep another skill or prompt running inside Claude plan usage caps: switch accounts, pause for a 5-hour reset, stop at the weekly cap. Needs `cswap`. |
 
 ### Commands
 

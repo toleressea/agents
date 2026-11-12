@@ -1,0 +1,47 @@
+# tol:review shipped defaults. Override in ~/.agents/config/tol/review.toml (user)
+# or <repo>/.agents/config/tol/review.toml (repo). See conventions/composable.md.
+
+# tables under these keys accept new entries (a repo can add its own lens)
+extensible = ["lenses"]
+
+# true: one subagent per lens, run at once. false: lenses run in order, inline.
+parallel = true
+
+# off: report only. ask: offer fixes, apply after approval. apply: fix confirmed findings.
+fix = "ask"
+
+# top-level keys above, tables below: in TOML a key after a [table] header belongs to it
+
+# input: the invocation and repo state. done-when: the change set is fixed.
+# output: the diff every lens reviews.
+[scope]
+instructions = "the uncommitted changes plus commits not on the default branch"
+
+# input: the scope diff. done-when: the lens has read every changed hunk.
+# output: findings, each with file:line, severity (high|medium|low), claim, evidence.
+# a lens binds `skill`, `instructions`, or both (instructions then steer the skill).
+[lenses.correctness]
+instructions = "bugs: wrong results, crashes, off-by-one, races, unhandled edge cases"
+
+[lenses.tests]
+instructions = "changed behavior that no test would catch if it broke"
+
+[lenses.simplicity]
+instructions = "code to delete, or to replace with the standard library"
+
+[lenses.security]
+instructions = "trust boundaries: injection, unsafe deserialization, secrets in code"
+
+[lenses.docs]
+instructions = "repo docs (README, AGENTS.md, docstrings) the change makes false"
+
+# input: all lens findings. done-when: each finding has a verdict.
+# output: findings marked confirmed or rejected, with the evidence for the verdict.
+# rounds = 0 skips verification.
+[verify]
+rounds = 1
+instructions = "a fresh agent re-reads the code for each finding and confirms or rejects it"
+
+# input: confirmed findings. output: the reply the user reads.
+[report]
+instructions = "rank by severity, one line per finding: file:line, severity, claim"

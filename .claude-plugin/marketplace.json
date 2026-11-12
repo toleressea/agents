@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "tol",
-      "description": "General skills: HTML reports, session watching, model routing, Claude Docs artifacts, Unity CLI, plus a few dev commands.",
+      "description": "General skills: HTML reports, session watching, YouTube transcripts, usage-capped loops, model routing, Claude Docs artifacts, Unity CLI, plus a few dev commands.",
       "source": "./plugins/tol",
       "category": "productivity"
     }

@@ -18,20 +18,21 @@ One HTML file the operator can read at a glance and keep. The topic comes from `
 
 ## Build
 
-- Start from `assets/base.html`: replace `__TITLE__` and `__LEDE__`, and write the body with its classes (`card`, `grid` + `stat`, `table`, `tag ok|bad|warn`, `callout info|bad|ok`, `nav.toc`). Add CSS only for what the base lacks.
+- Start from `${CLAUDE_SKILL_DIR}/assets/base.html`: replace `__TITLE__` and `__LEDE__`, and write the body with its classes (`card`, `grid` + `stat`, `table`, `tag ok|bad|warn`, `callout info|bad|ok`, `nav.toc`). Add CSS only for what the base lacks.
+- HTML-escape `&`, `<`, `>` and `"` in all quoted or gathered text (logs, transcript lines, code) before you insert it. Put code in `<pre><code>` after escaping.
 - One file, no external requests: inline styles and scripts, embed small images as data URIs.
 - Keep the footer line.
 - Save to `~/.agents/reports/<slug>.html`, unless the operator names another place. An existing file with that name is overwritten only when it is this report's earlier version.
 
 ## Annotate mode
 
-When `$ARGUMENTS` contains `annotate`, paste `assets/annotate.js` into a `<script>` at the end of `<body>`. Each heading, paragraph, list item, table row, code block, stat and callout then gets a "+" on hover. A note is kept in the browser (`localStorage`), so it survives a reload. **Export** downloads `<slug>.notes.json` and copies the notes as Markdown.
+When `$ARGUMENTS` contains `annotate`, paste `${CLAUDE_SKILL_DIR}/assets/annotate.js` into a `<script>` at the end of `<body>`. Each heading, paragraph, list item, table row, code block, stat and callout then gets a "+" on hover. A note is kept in the browser (`localStorage`), so it survives a reload. **Export** downloads `<slug>.notes.json` and copies the notes as Markdown.
 
 Tell the operator: write notes, press Export, and say so. Then read the newest `~/Downloads/<slug>.notes*.json`. Each note carries the excerpt of the block it belongs to.
 
 ## Playable sandbox
 
-When the operator wants to try designs by feel (fly, drive, jump, tune while playing), the report gets a canvas sandbox. Build it from `assets/sandbox.js` (fixed-step loop, keyboard and mouse, full screen, slider rows, saved tuning with JSON export, seeded random, headless self-test).
+When the operator wants to try designs by feel (fly, drive, jump, tune while playing), the report gets a canvas sandbox. Build it from `${CLAUDE_SKILL_DIR}/assets/sandbox.js` (fixed-step loop, keyboard and mouse, full screen, slider rows, saved tuning with JSON export, seeded random, headless self-test).
 
 The sandbox has:
 
@@ -46,7 +47,7 @@ Before handing it over: `node --check` the extracted script, run the `#selftest`
 
 ## Balance matrix
 
-When the operator wants to compare or tune many things on shared numbers (enemies, weapons, items), build from `assets/balance-matrix.html` instead of the base. Each row is a thing and each column a shared stat. Every bar is scaled to its column's maximum and coloured on a blue-to-yellow ramp. With **Edit** on, each cell becomes a slider: the bars rescale live, formula columns recompute, and **Export** downloads `<slug>-changes.json`, listing each changed source field with its from and to values. The data contract is in the comment at the top of the file.
+When the operator wants to compare or tune many things on shared numbers (enemies, weapons, items), build from `${CLAUDE_SKILL_DIR}/assets/balance-matrix.html` instead of the base. Each row is a thing and each column a shared stat. Every bar is scaled to its column's maximum and coloured on a blue-to-yellow ramp. With **Edit** on, each cell becomes a slider: the bars rescale live, formula columns recompute, and **Export** downloads `<slug>-changes.json`, listing each changed source field with its from and to values. The data contract is in the comment at the top of the file.
 
 - Read the values from the live source of truth (for Unity, the open Editor through `unity command eval`), not by parsing asset files.
 - Tie every slider to a real field. Use `toField` when the column shows something else (a cooldown shown as a rate is `1 / x`), and a `formula` column for anything computed from several fields (damage per second). A cell without `field` is shown with no slider.
@@ -54,6 +55,6 @@ When the operator wants to compare or tune many things on shared numbers (enemie
 
 ## Open
 
-Unless `$ARGUMENTS` contains `no-open`, open it in Chrome. On Windows: `Start-Process chrome '<file>'`, or with the full path `C:\Program Files (x86)\Google\Chrome\Application\chrome.exe` if `chrome` does not resolve. On macOS: `open -a "Google Chrome" '<file>'`. On Linux: `google-chrome '<file>'`, or `xdg-open '<file>'` for the default browser. Give the operator the path as a `file:///` URL too.
+Unless `$ARGUMENTS` contains `no-open`, open it in Chrome. On Windows: `Start-Process chrome '<file>'`, or with the full path `C:\Program Files (x86)\Google\Chrome\Application\chrome.exe` if `chrome` does not resolve. On macOS: `open -a "Google Chrome" '<file>' || open '<file>'`. On Linux: `google-chrome '<file>'`, or `xdg-open '<file>'` for the default browser. Give the operator the path as a `file:///` URL too.
 
 🤖 Generated with stochastic optimism by clankers 🤖
